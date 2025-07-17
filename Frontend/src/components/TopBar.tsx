@@ -1,14 +1,18 @@
 
 import React from 'react';
-import { MapPin, Phone, Mail, Sparkles } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { MapPin, Phone, Mail, Sparkles, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export const TopBar = () => {
+  const navigate = useNavigate();
+
   return (
     <nav className="bg-white/95 backdrop-blur-sm border-b border-border/20 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <Link to="/" className="flex-shrink-0">
             <div className="flex items-center">
               <div className="bg-gradient-to-r from-rose-600 to-pink-600 rounded-full p-2 mr-3">
                 <Sparkles className="h-6 w-6 text-white" />
@@ -17,23 +21,23 @@ export const TopBar = () => {
                 Book My Function Hall
               </h1>
             </div>
-          </div>
+          </Link>
           
-          {/* Centered Navigation - Hovering Rectangular Buttons */}
+          {/* Centered Navigation */}
           <div className="hidden md:block">
             <div className="flex items-center space-x-2">
-              <a 
-                href="#" 
+              <Link 
+                to="/" 
                 className="text-foreground hover:text-primary hover:bg-accent px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-md hover:scale-105 border border-transparent hover:border-border/30"
               >
                 Home
-              </a>
-              <a 
-                href="#venues" 
+              </Link>
+              <Link 
+                to="/venues" 
                 className="text-foreground hover:text-primary hover:bg-accent px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-md hover:scale-105 border border-transparent hover:border-border/30"
               >
                 Venues
-              </a>
+              </Link>
               <a 
                 href="#cities" 
                 className="text-foreground hover:text-primary hover:bg-accent px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-md hover:scale-105 border border-transparent hover:border-border/30"
@@ -55,15 +59,29 @@ export const TopBar = () => {
             </div>
           </div>
           
-          {/* Contact Info */}
-          <div className="hidden lg:flex items-center space-x-4">
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Phone className="h-4 w-4 mr-1" />
-              <span>+91 9876543210</span>
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-4">
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Phone className="h-4 w-4 mr-1" />
+                <span>+91 9876543210</span>
+              </div>
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Mail className="h-4 w-4 mr-1" />
+                <span>info@bookmyfunctionhall.com</span>
+              </div>
             </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Mail className="h-4 w-4 mr-1" />
-              <span>info@bookmyfunctionhall.com</span>
+            
+            <div className="flex items-center space-x-2">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate('/login')}
+                className="flex items-center gap-1"
+              >
+                <User className="h-4 w-4" />
+                Login
+              </Button>
             </div>
           </div>
           

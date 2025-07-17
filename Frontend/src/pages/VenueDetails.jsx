@@ -4,11 +4,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { TopBar } from '@/components/TopBar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { useAuth } from '../contexts/AuthContext';
 import { 
   Star, MapPin, Users, Phone, Mail, Navigation, 
   Flower, Music, UtensilsCrossed, Sparkles, Crown, 
-  Palette, Heart, ArrowLeft, ChevronLeft, ChevronRight
+  Palette, Heart, ArrowLeft, Share, Bookmark
 } from 'lucide-react';
 
 const mockVenueDetails = {
@@ -49,24 +56,117 @@ const mockVenueDetails = {
       email: "contact@royalgardenpalace.com",
       manager: "Rajesh Kumar"
     }
+  },
+  2: {
+    id: 2,
+    name: "Grand Celebration Hub",
+    location: "Connaught Place, Delhi",
+    coordinates: { lat: 28.6315, lng: 77.2167 },
+    rating: 4.7,
+    reviews: 189,
+    price: "₹1,25,000",
+    capacity: "300-600 guests",
+    description: "Grand Celebration Hub is a premier venue located in the heart of Delhi. With state-of-the-art facilities and elegant interiors, it provides the perfect setting for your special celebrations.",
+    images: [
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800",
+      "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=800",
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800"
+    ],
+    nearbyPlaces: [
+      { name: "Connaught Place Metro", distance: "0.5 km" },
+      { name: "India Gate", distance: "2.1 km" },
+      { name: "Red Fort", distance: "3.5 km" }
+    ],
+    services: [
+      { name: "DJ Services", icon: Music, available: true },
+      { name: "Food Catering", icon: UtensilsCrossed, available: true },
+      { name: "Flower Decoration", icon: Flower, available: true }
+    ],
+    contact: {
+      phone: "+91 9876543211",
+      email: "contact@grandcelebrationhub.com",
+      manager: "Priya Sharma"
+    }
+  },
+  3: {
+    id: 3,
+    name: "Heritage Wedding Hall",
+    location: "Koregaon Park, Pune",
+    coordinates: { lat: 18.5196, lng: 73.8553 },
+    rating: 4.9,
+    reviews: 312,
+    price: "₹95,000",
+    capacity: "200-400 guests",
+    description: "Heritage Wedding Hall combines traditional architecture with modern amenities, creating a perfect venue for intimate celebrations in Pune.",
+    images: [
+      "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=800",
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800",
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800"
+    ],
+    nearbyPlaces: [
+      { name: "Pune Railway Station", distance: "8.2 km" },
+      { name: "Koregaon Park", distance: "0.5 km" },
+      { name: "Phoenix Mall", distance: "1.2 km" }
+    ],
+    services: [
+      { name: "Traditional Setup", icon: Crown, available: true },
+      { name: "Food Catering", icon: UtensilsCrossed, available: true },
+      { name: "Mandap Decoration", icon: Palette, available: true }
+    ],
+    contact: {
+      phone: "+91 9876543212",
+      email: "contact@heritageweddinghall.com",
+      manager: "Amit Patel"
+    }
+  },
+  4: {
+    id: 4,
+    name: "Majestic Banquet Hall",
+    location: "Jubilee Hills, Hyderabad",
+    coordinates: { lat: 17.4065, lng: 78.4772 },
+    rating: 4.6,
+    reviews: 156,
+    price: "₹1,80,000",
+    capacity: "600-1000 guests",
+    description: "Majestic Banquet Hall is a luxurious venue perfect for grand celebrations with world-class amenities and exceptional service.",
+    images: [
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800",
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800",
+      "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=800"
+    ],
+    nearbyPlaces: [
+      { name: "Hyderabad Airport", distance: "25 km" },
+      { name: "Jubilee Hills", distance: "0.5 km" },
+      { name: "Banjara Hills", distance: "3.2 km" }
+    ],
+    services: [
+      { name: "Valet Parking", icon: Heart, available: true },
+      { name: "Food Catering", icon: UtensilsCrossed, available: true },
+      { name: "DJ Services", icon: Music, available: true }
+    ],
+    contact: {
+      phone: "+91 9876543213",
+      email: "contact@majesticbanquethall.com",
+      manager: "Rajesh Kumar"
+    }
   }
 };
 
 const VenueDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const authContext = useAuth();
+  const { user } = authContext || { user: null };
   
   const venueId = parseInt(id);
   const venue = mockVenueDetails[venueId];
+  const [isLiked, setIsLiked] = useState(false);
 
   const handleBookNow = () => {
     if (!user) {
       navigate('/login');
       return;
     }
-    // Handle booking logic here
     console.log('Booking venue:', venue.name);
   };
 
@@ -75,7 +175,6 @@ const VenueDetails = () => {
       navigate('/login');
       return;
     }
-    // Handle contact logic here
     console.log('Contacting venue:', venue.name);
   };
 
@@ -90,216 +189,187 @@ const VenueDetails = () => {
     );
   }
 
-  const nextImage = () => {
-    if (!venue || !Array.isArray(venue.images) || venue.images.length === 0) return;
-    setCurrentImageIndex((prev) =>
-      prev === venue.images.length - 1 ? 0 : prev + 1
-    );
-  };
-  
-  const prevImage = () => {
-    if (!venue || !Array.isArray(venue.images) || venue.images.length === 0) return;
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? venue.images.length - 1 : prev - 1
-    );
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <TopBar />
       
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Back Button */}
         <Button 
           variant="ghost" 
           onClick={() => navigate(-1)}
-          className="mb-6 hover:bg-accent"
+          className="mb-4 hover:bg-accent"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to listings
+          Back
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Image Gallery */}
-          <div className="space-y-4">
-            <div className="relative h-96 rounded-2xl overflow-hidden">
-              <img 
-                src={venue.images[currentImageIndex]} 
-                alt={venue.name}
-                className="w-full h-full object-cover"
-              />
-              
-              {/* Navigation Arrows */}
-              <button
-                onClick={prevImage}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 transition-colors"
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-3xl font-bold text-primary">{venue.name}</h1>
+            <div className="flex items-center space-x-2">
+              <Button variant="ghost" size="sm">
+                <Share className="h-4 w-4 mr-1" />
+                Share
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setIsLiked(!isLiked)}
               >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-              <button
-                onClick={nextImage}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 transition-colors"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
-
-              {/* Image Counter */}
-              <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                {currentImageIndex + 1} / {venue.images.length}
-              </div>
-            </div>
-
-            {/* Thumbnail Gallery */}
-            <div className="grid grid-cols-5 gap-2">
-              {venue.images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`h-20 rounded-lg overflow-hidden ${
-                    index === currentImageIndex ? 'ring-2 ring-rose-500' : ''
-                  }`}
-                >
-                  <img 
-                    src={image} 
-                    alt={`${venue.name} ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
+                <Heart className={`h-4 w-4 mr-1 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                Save
+              </Button>
             </div>
           </div>
-
-          {/* Venue Details */}
-          <div className="space-y-6">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="bg-white/90 rounded-full px-3 py-1 flex items-center gap-1 border">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="font-semibold">{venue.rating}</span>
-                  <span className="text-muted-foreground">({venue.reviews} reviews)</span>
-                </div>
-              </div>
-              
-              <h1 className="text-3xl font-bold text-primary mb-2">{venue.name}</h1>
-              
-              <div className="flex items-center text-muted-foreground mb-4">
-                <MapPin className="h-5 w-5 mr-2" />
-                <span>{venue.location}</span>
-              </div>
-
-              <div className="flex items-center gap-4 mb-4">
-                <div className="flex items-center">
-                  <Users className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <span className="font-medium">{venue.capacity}</span>
-                </div>
-                <div className="text-2xl font-bold text-primary">
-                  {venue.price} <span className="text-sm font-normal text-muted-foreground">onwards</span>
-                </div>
-              </div>
+          
+          <div className="flex items-center space-x-4 text-sm">
+            <div className="flex items-center">
+              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
+              <span className="font-semibold">{venue.rating}</span>
+              <span className="text-muted-foreground ml-1">({venue.reviews} reviews)</span>
             </div>
-
-            {/* Description */}
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-3">About this venue</h3>
-                <p className="text-muted-foreground leading-relaxed">{venue.description}</p>
-              </CardContent>
-            </Card>
-
-            {/* Nearby Places */}
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-4 flex items-center">
-                  <Navigation className="h-5 w-5 mr-2" />
-                  Nearby Places
-                </h3>
-                <div className="space-y-2">
-                  {venue.nearbyPlaces.map((place, index) => (
-                    <div key={index} className="flex justify-between items-center">
-                      <span className="text-muted-foreground">{place.name}</span>
-                      <span className="font-medium">{place.distance}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Action Buttons */}
-            <div className="flex gap-4">
-              <Button 
-                size="lg" 
-                className="flex-1 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700"
-                onClick={handleBookNow}
-              >
-                Book Now
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="flex-1 border-rose-600 text-rose-600 hover:bg-rose-50"
-                onClick={handleContactUs}
-              >
-                <Phone className="h-4 w-4 mr-2" />
-                Contact Us
-              </Button>
+            <div className="flex items-center text-muted-foreground">
+              <MapPin className="h-4 w-4 mr-1" />
+              <span>{venue.location}</span>
             </div>
           </div>
         </div>
 
-        {/* Services Section */}
-        <Card className="mt-8">
-          <CardContent className="p-6">
-            <h3 className="text-xl font-semibold mb-6">Services Offered</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {venue.services.map((service, index) => (
-                <div 
-                  key={index} 
-                  className="flex items-center gap-3 p-4 rounded-lg border hover:bg-accent transition-colors"
-                >
-                  <div className="p-2 rounded-full bg-rose-100">
-                    <service.icon className="h-5 w-5 text-rose-600" />
+        {/* Image Carousel */}
+        <div className="mb-8">
+          <Carousel className="w-full">
+            <CarouselContent>
+              {venue.images.map((image, index) => (
+                <CarouselItem key={index}>
+                  <div className="relative">
+                    <img 
+                      src={image} 
+                      alt={`${venue.name} ${index + 1}`}
+                      className="w-full h-96 object-cover rounded-xl"
+                    />
                   </div>
-                  <div>
-                    <span className="font-medium">{service.name}</span>
-                    {service.available && (
-                      <span className="text-xs text-green-600 block">Available</span>
-                    )}
-                  </div>
-                </div>
+                </CarouselItem>
               ))}
-            </div>
-          </CardContent>
-        </Card>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
 
-        {/* Contact Information */}
-        <Card className="mt-8">
-          <CardContent className="p-6">
-            <h3 className="text-xl font-semibold mb-4">Contact Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="flex items-center gap-3">
-                <Phone className="h-5 w-5 text-rose-600" />
-                <div>
-                  <p className="font-medium">Phone</p>
-                  <p className="text-muted-foreground">{venue.contact.phone}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-rose-600" />
-                <div>
-                  <p className="font-medium">Email</p>
-                  <p className="text-muted-foreground">{venue.contact.email}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Users className="h-5 w-5 text-rose-600" />
-                <div>
-                  <p className="font-medium">Manager</p>
-                  <p className="text-muted-foreground">{venue.contact.manager}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* About */}
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">About this venue</h2>
+              <p className="text-muted-foreground leading-relaxed">{venue.description}</p>
+            </div>
+
+            {/* Capacity & Details */}
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Venue Details</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center">
+                  <Users className="h-5 w-5 mr-3 text-rose-600" />
+                  <div>
+                    <p className="font-medium">Capacity</p>
+                    <p className="text-muted-foreground">{venue.capacity}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Services */}
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Services Offered</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {venue.services.map((service, index) => (
+                  <div 
+                    key={index} 
+                    className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors"
+                  >
+                    <div className="p-2 rounded-full bg-rose-100">
+                      <service.icon className="h-4 w-4 text-rose-600" />
+                    </div>
+                    <span className="font-medium text-sm">{service.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Nearby Places */}
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Nearby Places</h2>
+              <div className="space-y-3">
+                {venue.nearbyPlaces.map((place, index) => (
+                  <div key={index} className="flex justify-between items-center p-3 rounded-lg border">
+                    <span className="font-medium">{place.name}</span>
+                    <span className="text-muted-foreground">{place.distance}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Booking Card */}
+          <div className="lg:col-span-1">
+            <Card className="sticky top-24">
+              <CardContent className="p-6">
+                <div className="mb-6">
+                  <div className="text-2xl font-bold text-primary mb-2">
+                    {venue.price} <span className="text-sm font-normal text-muted-foreground">onwards</span>
+                  </div>
+                  <div className="flex items-center text-sm">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
+                    <span className="font-semibold">{venue.rating}</span>
+                    <span className="text-muted-foreground ml-1">({venue.reviews} reviews)</span>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700"
+                    onClick={handleBookNow}
+                  >
+                    Book Now
+                  </Button>
+                  
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="w-full border-rose-600 text-rose-600 hover:bg-rose-50"
+                    onClick={handleContactUs}
+                  >
+                    <Phone className="h-4 w-4 mr-2" />
+                    Contact Venue
+                  </Button>
+                </div>
+
+                {/* Contact Information */}
+                <div className="mt-6 pt-6 border-t">
+                  <h3 className="font-semibold mb-3">Contact Information</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center">
+                      <Phone className="h-4 w-4 text-rose-600 mr-2" />
+                      <span>{venue.contact.phone}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Mail className="h-4 w-4 text-rose-600 mr-2" />
+                      <span>{venue.contact.email}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Users className="h-4 w-4 text-rose-600 mr-2" />
+                      <span>{venue.contact.manager}</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

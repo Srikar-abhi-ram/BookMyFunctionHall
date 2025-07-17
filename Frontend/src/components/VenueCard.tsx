@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Star, MapPin, Users, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,10 +20,11 @@ interface Venue {
 
 interface VenueCardProps {
   venue: Venue;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export const VenueCard = ({ venue, onClick }: VenueCardProps) => {
+  const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
 
@@ -45,11 +47,20 @@ export const VenueCard = ({ venue, onClick }: VenueCardProps) => {
     setIsLiked(!isLiked);
   };
 
+  const handleCardClick = () => {
+    navigate(`/venue/${venue.id}`);
+  };
+
+  const handleKnowMoreClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/venue/${venue.id}`);
+  };
+
   return (
     <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group">
       <div className="relative">
         {/* Image Carousel */}
-        <div className="relative h-64 overflow-hidden">
+        <div className="relative h-64 overflow-hidden" onClick={handleCardClick}>
           <img 
             src={venue.images[currentImageIndex]} 
             alt={venue.name}
@@ -107,7 +118,7 @@ export const VenueCard = ({ venue, onClick }: VenueCardProps) => {
           </div>
         </div>
         
-        <CardContent className="p-4" onClick={onClick}>
+        <CardContent className="p-4" onClick={handleCardClick}>
           <div className="flex justify-between items-start mb-2">
             <h3 className="text-lg font-bold text-primary line-clamp-1">{venue.name}</h3>
             <div className="text-right">
@@ -148,10 +159,7 @@ export const VenueCard = ({ venue, onClick }: VenueCardProps) => {
 
           <Button 
             className="w-full bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick();
-            }}
+            onClick={handleKnowMoreClick}
           >
             Know More
           </Button>
