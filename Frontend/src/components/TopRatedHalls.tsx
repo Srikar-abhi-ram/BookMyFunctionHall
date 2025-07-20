@@ -3,6 +3,7 @@ import React from 'react';
 import { Star, MapPin, Users, Phone } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const mockHalls = [
   {
@@ -41,6 +42,12 @@ const mockHalls = [
 ];
 
 export const TopRatedHalls = () => {
+  const navigate = useNavigate();
+  
+  const handleKnowMoreClick = (hall: any) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/venue/${hall.id}`);
+  };
   return (
     <section className="py-20 px-4 bg-background">
       <div className="max-w-7xl mx-auto">
@@ -98,9 +105,9 @@ export const TopRatedHalls = () => {
                     <span className="text-2xl font-bold text-primary">{hall.price}</span>
                     <span className="text-sm text-muted-foreground ml-1">onwards</span>
                   </div>
-                  <Button className="bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700">
-                    <Phone className="h-4 w-4 mr-2" />
-                    Contact
+                  <Button className="bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700"  onClick={handleKnowMoreClick(hall)}>
+                    
+                    Know more
                   </Button>
                 </div>
               </CardContent>

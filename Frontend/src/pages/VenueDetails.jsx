@@ -15,7 +15,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { 
   Star, MapPin, Users, Phone, Mail, Navigation, 
   Flower, Music, UtensilsCrossed, Sparkles, Crown, 
-  Palette, Heart, ArrowLeft, Share, Bookmark
+  Palette, Heart, ArrowLeft, Share, Bookmark, Calendar
 } from 'lucide-react';
 
 const mockVenueDetails = {
@@ -258,9 +258,9 @@ const VenueDetails = () => {
           </Carousel>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8" style={{display:"flex", gap:"20px" }}>
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-8" style={{width:"70%" }}>
             {/* About */}
             <div>
               <h2 className="text-2xl font-semibold mb-4">About this venue</h2>
@@ -282,35 +282,50 @@ const VenueDetails = () => {
             </div>
 
             {/* Services */}
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Services Offered</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {venue.services.map((service, index) => (
-                  <div 
-                    key={index} 
-                    className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors"
-                  >
-                    <div className="p-2 rounded-full bg-rose-100">
-                      <service.icon className="h-4 w-4 text-rose-600" />
-                    </div>
-                    <span className="font-medium text-sm">{service.name}</span>
+            <div className="border-b border-gray-200 pb-12">
+              <h3 className="text-[22px] font-semibold mb-6">What this place offers</h3>
+              <div className="grid grid-cols-2 gap-y-4 gap-x-8">
+                {venue.services.slice(0, 8).map((service, index) => (
+                 <div key={index} className="flex items-center gap-4">
+                    <service.icon className="h-6 w-6 text-gray-700" />
+                    <span className="text-gray-700">{service.name}</span>
                   </div>
                 ))}
+                {venue.services.length > 8 && (
+                  <>
+                    <div className="flex items-center gap-4 opacity-50 line-through">
+                      <span className="h-6 w-6" />
+                      <span className="text-gray-700">Carbon monoxide alarm</span>
+                    </div>
+                    <div className="flex items-center gap-4 opacity-50 line-through">
+                      <span className="h-6 w-6" />
+                      <span className="text-gray-700">Smoke alarm</span>
+                    </div>
+                  </>
+                )}
+              </div>
+              <Button 
+                variant="outline" 
+                className="mt-6 px-6 py-2 border-black text-black hover:bg-gray-50 rounded-lg font-medium"
+              >
+                Show all {venue.services.length + 2} amenities
+              </Button>
+            </div>
+            {/* Calendar */}
+            <div className="pb-12">
+              <h3 className="text-[22px] font-semibold mb-2">2 nights in {venue.location.split(',')[0]}</h3>
+              <p className="text-gray-600 mb-6">8 Aug 2025 - 10 Aug 2025</p>
+              
+              <div className="bg-gray-50 rounded-xl p-8">
+                <div className="text-center text-gray-500">
+                  <Calendar className="h-12 w-12 mx-auto mb-4" />
+                  <p>Calendar placeholder</p>
+                  <p className="text-sm">Select dates to see availability</p>
+                </div>
               </div>
             </div>
 
-            {/* Nearby Places */}
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Nearby Places</h2>
-              <div className="space-y-3">
-                {venue.nearbyPlaces.map((place, index) => (
-                  <div key={index} className="flex justify-between items-center p-3 rounded-lg border">
-                    <span className="font-medium">{place.name}</span>
-                    <span className="text-muted-foreground">{place.distance}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+           
           </div>
 
           {/* Booking Card */}
@@ -368,6 +383,18 @@ const VenueDetails = () => {
                 </div>
               </CardContent>
             </Card>
+             {/* Nearby Places */}
+             <div>
+              <h2 className="text-2xl font-semibold mb-4">Nearby Places</h2>
+              <div className="space-y-3">
+                {venue.nearbyPlaces.map((place, index) => (
+                  <div key={index} className="flex justify-between items-center p-3 rounded-lg border">
+                    <span className="font-medium">{place.name}</span>
+                    <span className="text-muted-foreground">{place.distance}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
