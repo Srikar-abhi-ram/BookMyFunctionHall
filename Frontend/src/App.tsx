@@ -7,9 +7,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import Venues from "./pages/Venues";
 import VenueDetails from "./pages/VenueDetails";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import OwnerLogin from "./pages/OwnerLogin";
+import OwnerSignup from "./pages/Signup";
+import OwnerLogin from "./pages/Login";
 import OwnerOnboarding from "./pages/OwnerOnboarding";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import NotFound from "./pages/NotFound";
@@ -30,9 +29,8 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/venues" element={<Venues />} />
               <Route path="/venue/:id" element={<VenueDetails />} />
-              <Route path="/owner" element={<OwnerLogin />} />
-              <Route path="/owner/login" element={<Login />} />
-              <Route path="/owner/signup" element={<Signup />} />
+              <Route path="/owner/login" element={<OwnerLogin />} />
+              <Route path="/owner/signup" element={<OwnerSignup />} />
               <Route path="/owner/onboarding" element={<OwnerOnboarding />} />
               <Route path="/owner/dashboard" element={<OwnerDashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
