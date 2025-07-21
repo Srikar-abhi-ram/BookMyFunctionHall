@@ -71,27 +71,68 @@ const mockVenues = [
       "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=400"
     ],
     features: ["Valet Parking", "AC Hall", "Stage", "Catering"]
+  },
+  {
+    id: 5,
+    name: "Golden Palace Convention",
+    location: "Banjara Hills, Hyderabad",
+    distance: "2.8 km",
+    rating: 4.7,
+    reviews: 203,
+    price: "₹1,65,000",
+    capacity: "400-700 guests",
+    images: [
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400",
+      "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=400",
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400"
+    ],
+    features: ["Premium Decor", "AC Hall", "Parking", "Catering"]
+  },
+  {
+    id: 6,
+    name: "Crystal Grand Hall",
+    location: "HITEC City, Hyderabad",
+    distance: "5.2 km",
+    rating: 4.5,
+    reviews: 128,
+    price: "₹2,20,000",
+    capacity: "800-1200 guests",
+    images: [
+      "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=400",
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400",
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400"
+    ],
+    features: ["Modern Setup", "LED Screens", "Parking", "Catering"]
   }
 ];
 
 const Venues = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { searchQuery, searchType } = location.state || {};
+  const { searchQuery, searchType, filterQuery: routeFilterQuery } = location.state || {};
   const [venues, setVenues] = useState(mockVenues);
   const [sortBy, setSortBy] = useState('relevance');
-  const [filterQuery, setFilterQuery] = useState('');
+  const [filterQuery, setFilterQuery] = useState(routeFilterQuery || '');
 
   useEffect(() => {
-    // Filter venues based on search query
+    // Filter venues based on search query or route filter query
+    let filtered = mockVenues;
+    
     if (searchQuery) {
-      const filtered = mockVenues.filter(venue =>
+      filtered = filtered.filter(venue =>
         venue.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         venue.location.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setVenues(filtered);
     }
-  }, [searchQuery]);
+    
+    if (routeFilterQuery) {
+      filtered = filtered.filter(venue =>
+        venue.location.toLowerCase().includes(routeFilterQuery.toLowerCase())
+      );
+    }
+    
+    setVenues(filtered);
+  }, [searchQuery, routeFilterQuery]);
 
   const handleSort = (value) => {
     setSortBy(value);

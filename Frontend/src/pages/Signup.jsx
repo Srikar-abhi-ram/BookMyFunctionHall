@@ -5,16 +5,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { signInWithEmail, signInWithGoogle } from '../firebase/config';
+import { signUpWithEmail, signInWithGoogle } from '../firebase/config';
 import { useToast } from '@/hooks/use-toast';
-import { Chrome, ArrowLeft, Mail, Lock, Building } from 'lucide-react';
+import { Chrome, ArrowLeft, Mail, Lock, User, Building } from 'lucide-react';
 
-const OwnerLogin = () => {
+const OwnerSignup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
   const [loading, setLoading] = useState(false);
 
@@ -25,20 +27,29 @@ const OwnerLogin = () => {
     });
   };
 
-  const handleEmailSignIn = async (e) => {
+  const handleEmailSignUp = async (e) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      await signInWithEmail(formData.email, formData.password);
+      await signUpWithEmail(formData.email, formData.password);
       toast({
         title: "Success!",
-        description: "You have been signed in successfully."
+        description: "Account created successfully. Welcome!"
       });
-      navigate('/owner/dashboard');
+      navigate('/owner/onboarding');
     } catch (error) {
       toast({
         title: "Error",
-        description: "Invalid email or password. Please try again.",
+        description: error.message,
         variant: "destructive"
       });
     } finally {
@@ -46,18 +57,18 @@ const OwnerLogin = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignUp = async () => {
     try {
       await signInWithGoogle();
       toast({
         title: "Success!",
-        description: "You have been signed in successfully."
+        description: "Account created successfully with Google."
       });
-      navigate('/owner/dashboard');
+      navigate('/owner/onboarding');
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to sign in with Google. Please try again.",
+        description: "Failed to sign up with Google. Please try again.",
         variant: "destructive"
       });
     }
@@ -79,14 +90,31 @@ const OwnerLogin = () => {
             <Building className="h-8 w-8 text-primary" />
           </div>
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
-            Venue Owner Portal
+            Venue Owner Registration
           </CardTitle>
           <p className="text-muted-foreground mt-2">
-            Sign in to manage your venue and reach thousands of customers
+            Join our platform and list your venue to reach thousands of customers
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
-          <form onSubmit={handleEmailSignIn} className="space-y-4">
+          <form onSubmit={handleEmailSignUp} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium">Business Owner Name</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="pl-10 h-12 bg-background/50 border-border/50 focus:border-primary/50"
+                  required
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">Email</Label>
               <div className="relative">
@@ -112,7 +140,7 @@ const OwnerLogin = () => {
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder="Create a password"
                   value={formData.password}
                   onChange={handleInputChange}
                   className="pl-10 h-12 bg-background/50 border-border/50 focus:border-primary/50"
@@ -121,16 +149,21 @@ const OwnerLogin = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <div className="text-muted-foreground">
-                {/* Remember me checkbox could go here */}
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  className="pl-10 h-12 bg-background/50 border-border/50 focus:border-primary/50"
+                  required
+                />
               </div>
-              <Link 
-                to="#" 
-                className="text-primary hover:text-primary/80 font-medium transition-colors"
-              >
-                Forgot password?
-              </Link>
             </div>
 
             <Button
@@ -138,7 +171,7 @@ const OwnerLogin = () => {
               className="w-full h-12 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground font-medium shadow-lg hover:shadow-xl transition-all duration-200"
               disabled={loading}
             >
-              {loading ? "Signing In..." : "Sign In"}
+              {loading ? "Creating Account..." : "Create Owner Account"}
             </Button>
           </form>
 
@@ -152,7 +185,7 @@ const OwnerLogin = () => {
           </div>
 
           <Button
-            onClick={handleGoogleSignIn}
+            onClick={handleGoogleSignUp}
             variant="outline"
             className="w-full h-12 border-border/50 hover:bg-accent/50 transition-all duration-200"
           >
@@ -161,17 +194,17 @@ const OwnerLogin = () => {
           </Button>
 
           <div className="text-center text-sm">
-            <span className="text-muted-foreground">Don't have an account? </span>
+            <span className="text-muted-foreground">Already have an account? </span>
             <Link 
-              to="/owner/signup" 
+              to="/owner/login" 
               className="text-primary hover:text-primary/80 font-medium transition-colors"
             >
-              Sign up
+              Sign in
             </Link>
           </div>
 
           <div className="text-center text-xs text-muted-foreground">
-            By continuing, you agree to our{' '}
+            By creating an account, you agree to our{' '}
             <span className="text-primary cursor-pointer">Terms of Service</span> and{' '}
             <span className="text-primary cursor-pointer">Privacy Policy</span>
           </div>
@@ -181,4 +214,4 @@ const OwnerLogin = () => {
   );
 };
 
-export default OwnerLogin;
+export default OwnerSignup;
