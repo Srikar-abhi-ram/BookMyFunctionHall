@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { signInWithEmail, signInWithGoogle } from '../firebase/config';
+import { signInWithGoogle } from '../firebase/config';
 import { useToast } from '@/hooks/use-toast';
-import { Chrome, ArrowLeft, Mail, Lock, Building } from 'lucide-react';
+import { Chrome, ArrowLeft, Building } from 'lucide-react';
+import { auth } from '../firebase';
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const OwnerLogin = () => {
   const navigate = useNavigate();
@@ -27,9 +29,10 @@ const OwnerLogin = () => {
 
   const handleEmailSignIn = async (e) => {
     e.preventDefault();
+    const { email, password } = formData;
     setLoading(true);
     try {
-      await signInWithEmail(formData.email, formData.password);
+      await signInWithEmailAndPassword(auth, email, password);
       toast({
         title: "Success!",
         description: "You have been signed in successfully."
@@ -78,7 +81,7 @@ const OwnerLogin = () => {
           <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
             <Building className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold  from-primary via-primary to-primary bg-clip-text text-transparent">
             Venue Owner Portal
           </CardTitle>
           <p className="text-muted-foreground mt-2">
@@ -88,9 +91,9 @@ const OwnerLogin = () => {
         <CardContent className="space-y-6">
           <form onSubmit={handleEmailSignIn} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium">Email </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+               
                 <Input
                   id="email"
                   name="email"
@@ -107,7 +110,6 @@ const OwnerLogin = () => {
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="password"
                   name="password"

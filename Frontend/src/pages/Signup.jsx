@@ -6,9 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { signUpWithEmail, signInWithGoogle } from '../firebase/config';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { Chrome, ArrowLeft, Mail, Lock, User, Building } from 'lucide-react';
-
+import { auth } from '../firebase/config';
 const OwnerSignup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -29,7 +30,8 @@ const OwnerSignup = () => {
 
   const handleEmailSignUp = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
+    const { name, email, password, confirmPassword } = formData;
+    if (password !== confirmPassword) {
       toast({
         title: "Error",
         description: "Passwords do not match",
@@ -40,7 +42,10 @@ const OwnerSignup = () => {
 
     setLoading(true);
     try {
-      await signUpWithEmail(formData.email, formData.password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, {
+        displayName: name,
+      });
       toast({
         title: "Success!",
         description: "Account created successfully. Welcome!"
@@ -89,7 +94,7 @@ const OwnerSignup = () => {
           <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
             <Building className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold  from-primary via-primary  bg-clip-text text-transparent">
             Venue Owner Registration
           </CardTitle>
           <p className="text-muted-foreground mt-2">
@@ -101,7 +106,6 @@ const OwnerSignup = () => {
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">Business Owner Name</Label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="name"
                   name="name"
@@ -118,7 +122,6 @@ const OwnerSignup = () => {
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   name="email"
@@ -135,8 +138,7 @@ const OwnerSignup = () => {
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
+               <Input
                   id="password"
                   name="password"
                   type="password"
@@ -152,7 +154,6 @@ const OwnerSignup = () => {
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
