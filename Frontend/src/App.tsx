@@ -12,6 +12,7 @@ import OwnerLogin from "./pages/Login";
 import OwnerOnboarding from "./pages/OwnerOnboarding";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import NotFound from "./pages/NotFound";
+import OfflineBookingForm from "./components/OfflineBookingForm";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +34,7 @@ const App = () => {
               <Route path="/owner/signup" element={<OwnerSignup />} />
               <Route path="/owner/onboarding" element={<OwnerOnboarding />} />
               <Route path="/owner/dashboard" element={<OwnerDashboard />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path ="/owner/booking" element={<OfflineBookingForm />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>

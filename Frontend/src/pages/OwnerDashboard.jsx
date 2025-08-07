@@ -199,9 +199,9 @@ const OwnerDashboard = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8" >
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-5" style={{display:'flex', alignContent:"space-between", flexDirection:"row" , margin:"20px 0px"}}>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="venues">My Venues</TabsTrigger>
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
@@ -356,6 +356,10 @@ const OwnerDashboard = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Booking Management</h2>
               <div className="flex gap-2">
+                <Button variant="outline" size="sm"  onClick={()=>navigate('/owner/booking')}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add New Booking
+                </Button>
                 <Button variant="outline" size="sm">
                   <CheckCircle className="h-4 w-4 mr-1" />
                   Confirmed ({dashboardStats.confirmedBookings})
